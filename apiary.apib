@@ -1,46 +1,117 @@
 FORMAT: 1A
 
-# listings
-Notes API is a *short texts saving* service similar to its physical paper presence on your table.
+# Listing API
+The listing API is a collection of services related to listings, auctions (with or without fixed prices) and articles. Those services can be used to create a new listing to sell an article.
 
-# Group Notes
-Notes related resources of the **Notes API**
+# Group Listings
 
-## Notes Collection [/notes]
-### List all Notes [GET]
-+ Response 200 (application/json)
+## Listing properties
 
-        [{
-          "id": 1, "title": "Jogging in park"
-        }, {
-          "id": 2, "title": "Pick-up posters from post-office"
-        }]
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a listing. Choosen automatically. | None (not editable) |
+| article     |  Object     | Article object. | See article properties | 1 | 1 |
+| auction     |  Object     | Auction object. | See auction properties | 1 | 1 |
+| condition     |  Enum     | Condition of article. | One of: NEW,REFURBISHED,USED | 1 | 1 |
+| hitcount     |  Integer     | Number of page hits since auction start. | Valid Integer. | 1 | 1 |
 
-### Create a Note [POST]
-+ Request (application/json)
+## Auction properties
 
-        { "title": "Buy cheese and bread for breakfast." }
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify an auction. Choosen automatically. | None (not editable) |
+| seller     |  Object     | Seller object. | See *seller* properties. | 1 | 1 |
+| startdate     |  Timestamp     | When was the auction started in seconds since 1970 (UTC). | Valid timestamp. | 1 | 1 |
+| enddate     |  Timestamp     | When does the auction end in seconds since 1970 (UTC). | Valid timestamp. | 1 | 1 |
+| shipping     |  Object     | Shipping object. | See shipping properties. | 1 | 1 |
+| hasreservemet     |  Boolean     | True if reserve price was met. | Not null. | 1 | 1 |
+| hasbuynowprice     |  Boolean     | True if a buy now price was set. | Not null. | 1 | 1 |
+| hasreserveprice     |  Boolean     | True if reserve price was set. | Not null. | 1 | 1 |
+| isfeatured     |  Boolean     | True if auction is featured. | Not null. | 1 | 1 |
+| isbuynowonly     |  Boolean     | True if auction is buy now only. | Not null. | 1 | 1 |
+| ispickupallowed     |  Boolean     | True if article can be picked up. | Not null. | 1 | 1 |
+| quantity     |  Integer     | Number of articles. If quantity is set to a value greater than one then auction is set to buy now only. | >= 1 when auction starts | 0 | * |
+| currency     |  String     | Currency. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 3 | 3 |
+| reserveprice     |  Decimal   | The reserve price. | Valid money value.  | 0 | * |
+| buynowprice     |  Decimal   | The buy now price. | Valid money value.  | 0 | * |
+| price     |  Decimal   | The actual price. | Valid money value, greater or equal zero. Must be less than buy now price. Must be less than reserveprice on auction start. | 0 | * |
+| bids     |  Array[Object]   | Array of *bid* objects. | Valid bid object. See bid properties. | 0 | * |
+| questions     |  Array[Object]   | Array of *question* objects. | Valid bid object. See bid properties. | 0 | * |
+| shippingoptions     |  Array[Object]   | List of *shipping options*. | Valid shippingoption object. See shippingoption properties. | 1 | 5 |
+| paymentoptions     |  Array[Object]   | List of *payment options*. | Valid paymentoptions object. See paymentoptions properties. | 1 | 5 |
+| location     |  Object   | *Locaction* of article. | Valid location object. See location properties. | 0 | 1 |
 
-+ Response 201 (application/json)
+## Location properties
 
-        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
 
-## Note [/notes/{id}]
-A single Note object with all its details
+## ShippingOption properties
 
-+ Parameters
-    + id (required, number, `1`) ... Numeric `id` of the Note to perform action with. Has example value.
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
 
-### Retrieve a Note [GET]
-+ Response 200 (application/json)
+## PaymentOption properties
 
-    + Header
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
 
-            X-My-Header: The Value
+## Question properties
 
-    + Body
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
 
-            { "id": 2, "title": "Pick-up posters from post-office" }
+## Bid properties
 
-### Remove a Note [DELETE]
-+ Response 204
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+
+## Seller properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+
+## Shipping properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify the shipping. Choosen automatically. | None (not editable) |
+
+## Article properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify an article. Choosen automatically. | None (not editable) |
+| brand     |  String     | The brand of the product. | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
+| description     |  String     | Long Description of article. | Pattern: [0-9a-zA-Z!?.:;-\n_] + whitespace | 0 | 5000 |
+| gtin     |  String     | Global Trade Item Numbers (GTINs), which include UPC (in the US), EAN (in Europe), JAN (in Japan), and ISBN | Pattern: [0-9a-zA-Z] | 8 | 14 |
+| images     |  Array[Object]     | Array of image objects. | Valid image object. | 1 | 30 |
+| language     |  Enum     | Language of article descriptions. | One of: DE,EN,ES,FR | 1 | 1 |
+| mpn     |  String     | Manufacturer part number. The number which uniquely identifies the product to its manufacturer. | Pattern: [0-9a-zA-Z] | 3 | 30 |
+| specs     |  Array[Object]     | Array of article specification objects. | Valid specification object. | 2 | 15 |
+| title     |  String     | Short Description of article. | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
+| categories     |  Array[Integer]     | Array of valid categories represented as integer. | Valid integer array. Not empty. | 1 | 3 |
+
+## Image properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a picture. Choosen automatically. | None (not editable) |
+| large     |  String     | Url to large version of this image. | None (not editable) |
+| medium     |  String     | Url to medium version of this image.  | None (not editable) |
+| small     |  String     | Url to small version of this image.  | None (not editable) |
+| thumbnail     |  String     | Url to thumbnail version of this image.  | None (not editable) |
+
+## Specification properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a spec. Choosen automatically. | None (not editable) |
+| name     |  String     | Name of specification e.g. display size. | Pattern: [0-9a-zA-Z_-] + whitespace | 2 | 20 |
+| value     |  String     | Value of specification e.g. 27 inch  | Pattern: [0-9a-zA-Z_-] + whitespace | 2 | 100 |
