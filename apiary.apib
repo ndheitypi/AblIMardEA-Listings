@@ -37,39 +37,57 @@ The listing API is a collection of services related to listings, auctions (with 
 | price     |  Decimal   | The actual price. | Valid money value, greater or equal zero. Must be less than buy now price. Must be less than reserveprice on auction start. | 0 | * |
 | bids     |  Array[Object]   | Array of *bid* objects. | Valid bid object. See bid properties. | 0 | * |
 | questions     |  Array[Object]   | Array of *question* objects. | Valid bid object. See bid properties. | 0 | * |
-| shippingoptions     |  Array[Object]   | List of *shipping options*. | Valid shippingoption object. See shippingoption properties. | 1 | 5 |
-| paymentoptions     |  Array[Object]   | List of *payment options*. | Valid paymentoptions object. See paymentoptions properties. | 1 | 5 |
-| location     |  Object   | *Locaction* of article. | Valid location object. See location properties. | 0 | 1 |
+| shippingoptions     |  Array[Object]   | List of *shipping options*. If empty the article is pick up only. | Valid shippingoption object. See shippingoption properties. | 1 | 5 |
+| paymentoptions     |  Array[Object]   | List of *payment options*. If empty the article can only be paid on pick up. | Valid paymentoptions object. See paymentoptions properties. | 1 | 5 |
+| location     |  Object   | *Locaction* of article. Sellers country and town are used when left empty. | Valid location object. See location properties. | 0 | 1 |
 
 ## Location properties
-The location is optional and represents the article location.
 
 | Name      |      Type         |  Description  | Constraints | Min.-Value | Max.-Value |
 |----------|:-------------:|:------:|------|:------:|------|------|
 | long     |  Decimal     | Longitude or null. | Decimal with period (.) as decimal mark or null. | -180.000000 | 180.000000 |
 | lat     |  Decimal     | Latitude or null. | Decimal with period (.) as decimal mark or null. | -90.000000 | 90.000000 |
+| address     |  Object     | Address object. | See address properties for more informations. | 0 | 1 |
+
+## Address properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| country     |  Enum     | Country | Must be a 2 letter code according to [ISO-3166-1](https://github.com/ndheitypi/AblIMardEA-Users/wiki/Country-Codes) | 1 | 1 |
+| postcode |  String     | Postcode | Pattern: [0-9] | 3 | 10 |
+| phone |  String     | Phone | Pattern: [0-9.+-()] + whitespace | 0 | 50 |
+| street     |  String     | Street | Pattern: [0-9a-zA-Z_-] + whitespace | 3 | 100 |
+| street2     |  String     | Additional address informations. | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
+| suburb     |  String     | Suburb | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
+| town |  String     | Town | Pattern: [0-9a-zA-Z_-] + whitespace | 2 | 100 |
 
 ## ShippingOption properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify a ShippingOption. Choosen automatically. | None (not editable) |
-| amount     |  Decimal   | Shipping cost. | Valid decimal value.  | 0 | * |
+| cost     |  Decimal   | Shipping cost. | Valid decimal value.  | 0 | * |
 | currency     |  Enum     | Currency of all money values in this shipping option. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
-| servicename     |  String     | Service name e.g. UPS Express | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
+| optionname     |  String     | Name of shipping option e.g. UPS Express | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
 | insurancevalue     |  Decimal   | Max. insured value. | Valid decimal value.  | 0 | * |
+| durationavg     |  Small Integer   | Average time till delivery in days. | Valid integer value.  | 0 | 255 |
+| destinations     |  Array[String]   | Array of 2 letter destination countries. | Valid [ISO-3166-1](https://github.com/ndheitypi/AblIMardEA-Users/wiki/Country-Codes) country codes.  | 1 | 20 |
 
 ## PaymentOption properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
-| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+| type     |  Enum     | Payment type. | One of: BANKDEPOSIT, CASH, CREDITCARD, OTHER | 1 | 1 |
+| name     |  String     | Name of payment option e.g. VISA. Can be null if type is BANKDEPOSIT or CASH | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
 
 ## Question properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
-| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+| askerid     |  String     | Public id of person asking this question. Choosen automatically. | None (not editable) |
+| answererid     |  String     | Public id of person answering this question. Choosen automatically. | None (not editable) |
+| question     |  String     | The question. | [0-9a-zA-Z!?.,] + whitespace |  > 0 | 255 |
+| answer     |  String     | The answer. | [0-9a-zA-Z!?.,] + whitespace |  > 0 | 255 |
 
 ## Bid properties
 
@@ -82,12 +100,6 @@ The location is optional and represents the article location.
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
-
-## Shipping properties
-
-| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
-|----------|:-------------:|:------:|------|:------:|------|------|
-| id     |  String     | Public id to identify the shipping. Choosen automatically. | None (not editable) |
 
 ## Article properties
 
