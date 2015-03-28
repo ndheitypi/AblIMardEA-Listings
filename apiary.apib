@@ -31,7 +31,7 @@ The listing API is a collection of services related to listings, auctions (with 
 | isbuynowonly     |  Boolean     | True if auction is buy now only. | Not null. | 1 | 1 |
 | ispickupallowed     |  Boolean     | True if article can be picked up. | Not null. | 1 | 1 |
 | quantity     |  Integer     | Number of articles. If quantity is set to a value greater than one then auction is set to buy now only. | >= 1 when auction starts | 0 | * |
-| currency     |  String     | Currency. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 3 | 3 |
+| currency     |  Enum     | Currency. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
 | reserveprice     |  Decimal   | The reserve price. | Valid money value.  | 0 | * |
 | buynowprice     |  Decimal   | The buy now price. | Valid money value.  | 0 | * |
 | price     |  Decimal   | The actual price. | Valid money value, greater or equal zero. Must be less than buy now price. Must be less than reserveprice on auction start. | 0 | * |
@@ -42,16 +42,22 @@ The listing API is a collection of services related to listings, auctions (with 
 | location     |  Object   | *Locaction* of article. | Valid location object. See location properties. | 0 | 1 |
 
 ## Location properties
+The location is optional and represents the article location.
 
-| Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
+| Name      |      Type         |  Description  | Constraints | Min.-Value | Max.-Value |
 |----------|:-------------:|:------:|------|:------:|------|------|
-| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+| long     |  Decimal     | Longitude or null. | Decimal with period (.) as decimal mark or null. | -180.000000 | 180.000000 |
+| lat     |  Decimal     | Latitude or null. | Decimal with period (.) as decimal mark or null. | -90.000000 | 90.000000 |
 
 ## ShippingOption properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
-| id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+| id     |  String     | Public id to identify a ShippingOption. Choosen automatically. | None (not editable) |
+| amount     |  Decimal   | Shipping cost. | Valid decimal value.  | 0 | * |
+| currency     |  Enum     | Currency of all money values in this shipping option. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
+| servicename     |  String     | Service name e.g. UPS Express | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
+| insurancevalue     |  Decimal   | Max. insured value. | Valid decimal value.  | 0 | * |
 
 ## PaymentOption properties
 
@@ -96,7 +102,7 @@ The listing API is a collection of services related to listings, auctions (with 
 | mpn     |  String     | Manufacturer part number. The number which uniquely identifies the product to its manufacturer. | Pattern: [0-9a-zA-Z] | 3 | 30 |
 | specs     |  Array[Object]     | Array of article specification objects. | Valid specification object. | 2 | 15 |
 | title     |  String     | Short Description of article. | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
-| categories     |  Array[Integer]     | Array of valid categories represented as integer. | Valid integer array. Not empty. | 1 | 3 |
+| categories     |  Array[Integer]     | Array of categories represented as integer. | Valid integer array. Not empty. | 1 | 3 |
 
 ## Image properties
 
