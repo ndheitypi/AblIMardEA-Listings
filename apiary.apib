@@ -12,28 +12,26 @@ The listing API is a collection of services related to listings, auctions (with 
 | id     |  String     | Public id to identify a listing. Choosen automatically. | None (not editable) |
 | article     |  Object     | Article object. | See article properties | 1 | 1 |
 | auction     |  Object     | Auction object. | See auction properties | 1 | 1 |
-| condition     |  Enum     | Condition of article. | One of: NEW,REFURBISHED,USED | 1 | 1 |
-| hitcount     |  Integer     | Number of page hits since auction start. | Valid Integer. | 1 | 1 |
+| hitcount     |  Integer     | Number of page hits since start of listing. | Valid Integer. | 1 | 1 |
+| isbuynowonly     |  Boolean     | True if listing is buy now only. | Not null. Auction.buynowprice > 0  | 1 | 1 |
 
 ## Auction properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify an auction. Choosen automatically. | None (not editable) |
+| condition     |  Object     | Condition of article. | Valid condition object. See condition properties. | 1 | 1 |
 | seller     |  Object     | Seller object. | See *seller* properties. | 1 | 1 |
 | startdate     |  Timestamp     | When was the auction started in seconds since 1970 (UTC). | Valid timestamp. | 1 | 1 |
 | enddate     |  Timestamp     | When does the auction end in seconds since 1970 (UTC). | Valid timestamp. | 1 | 1 |
 | shipping     |  Object     | Shipping object. | See shipping properties. | 1 | 1 |
-| hasreservemet     |  Boolean     | True if reserve price was met. | Not null. | 1 | 1 |
-| hasbuynowprice     |  Boolean     | True if a buy now price was set. | Not null. | 1 | 1 |
-| hasreserveprice     |  Boolean     | True if reserve price was set. | Not null. | 1 | 1 |
-| isfeatured     |  Boolean     | True if auction is featured. | Not null. | 1 | 1 |
-| isbuynowonly     |  Boolean     | True if auction is buy now only. | Not null. | 1 | 1 |
+| hasreservemet     |  Boolean     | True if reserve price was met. Always false if Listing.isbuynowonly equals true. | Not null. | 1 | 1 |
+| hasreserveprice     |  Boolean     | True if reserve price is greater than zero. Always false if Listing.isbuynowonly equals true. | Not null. | 1 | 1 |
 | ispickupallowed     |  Boolean     | True if article can be picked up. | Not null. | 1 | 1 |
 | quantity     |  Integer     | Number of articles. If quantity is set to a value greater than one then auction is set to buy now only. | >= 1 when auction starts | 0 | * |
 | currency     |  Enum     | Currency. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
 | reserveprice     |  Decimal   | The reserve price. | Valid money value.  | 0 | * |
-| buynowprice     |  Decimal   | The buy now price. | Valid money value.  | 0 | * |
+| buynowprice     |  Decimal   | The buy now price. | Valid money value. Must be greater than zero if Listing.isbuynowonly equals true. | 0 | * |
 | price     |  Decimal   | The actual price. | Valid money value, greater or equal zero. Must be less than buy now price. Must be less than reserveprice on auction start. | 0 | * |
 | bids     |  Array[Object]   | Array of *bid* objects. | Valid bid object. See bid properties. | 0 | * |
 | questions     |  Array[Object]   | Array of *question* objects. | Valid bid object. See bid properties. | 0 | * |
@@ -41,12 +39,19 @@ The listing API is a collection of services related to listings, auctions (with 
 | paymentoptions     |  Array[Object]   | List of *payment options*. If empty the article can only be paid on pick up. | Valid paymentoptions object. See paymentoptions properties. | 1 | 5 |
 | location     |  Object   | *Locaction* of article. Sellers country and town are used when left empty. | Valid location object. See location properties. | 0 | 1 |
 
+## Condition properties
+
+| Name      |      Type         |  Description  | Constraints | Min.-Value | Max.-Value |
+|----------|:-------------:|:------:|------|:------:|------|------|
+| condition     |  Enum     | Condition of article. | One of: NEW,REFURBISHED,USED | 1 | 1 |
+| details     |  String     | Additional details about condition. | Pattern: [0-9a-zA-Z-.] + whitespace | 0 | 255 |
+
 ## Location properties
 
 | Name      |      Type         |  Description  | Constraints | Min.-Value | Max.-Value |
 |----------|:-------------:|:------:|------|:------:|------|------|
-| long     |  Decimal     | Longitude or null. | Decimal with period (.) as decimal mark or null. | -180.000000 | 180.000000 |
-| lat     |  Decimal     | Latitude or null. | Decimal with period (.) as decimal mark or null. | -90.000000 | 90.000000 |
+| long     |  Decimal     | Longitude or null. | Decimal. | -180.000000 | 180.000000 |
+| lat     |  Decimal     | Latitude or null. | Decimal. | -90.000000 | 90.000000 |
 | address     |  Object     | Address object. | See address properties for more informations. | 0 | 1 |
 
 ## Address properties
@@ -77,6 +82,7 @@ The listing API is a collection of services related to listings, auctions (with 
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a PaymentOption. Choosen automatically. | None (not editable) |
 | type     |  Enum     | Payment type. | One of: BANKDEPOSIT, CASH, CREDITCARD, OTHER | 1 | 1 |
 | name     |  String     | Name of payment option e.g. VISA. Can be null if type is BANKDEPOSIT or CASH | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
 
@@ -84,6 +90,7 @@ The listing API is a collection of services related to listings, auctions (with 
 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
+| id     |  String     | Public id to identify a Question. Choosen automatically. | None (not editable) |
 | askerid     |  String     | Public id of person asking this question. Choosen automatically. | None (not editable) |
 | answererid     |  String     | Public id of person answering this question. Choosen automatically. | None (not editable) |
 | question     |  String     | The question. | [0-9a-zA-Z!?.,] + whitespace |  > 0 | 255 |
@@ -107,13 +114,13 @@ The listing API is a collection of services related to listings, auctions (with 
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify an article. Choosen automatically. | None (not editable) |
 | brand     |  String     | The brand of the product. | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
-| description     |  String     | Long Description of article. | Pattern: [0-9a-zA-Z!?.:;-\n_] + whitespace | 0 | 5000 |
-| gtin     |  String     | Global Trade Item Numbers (GTINs), which include UPC (in the US), EAN (in Europe), JAN (in Japan), and ISBN | Pattern: [0-9a-zA-Z] | 8 | 14 |
+| description     |  String     | Long Description of article. | Pattern: [0-9a-zA-Z!?.:;-\n_] + whitespace | 30 | 5000 |
+| gtin     |  String     | Global Trade Item Numbers (GTINs), which include UPC (in the US), EAN (in Europe), JAN (in Japan), and ISBN | Pattern: [0-9a-zA-Z] | 0 | 14 |
 | images     |  Array[Object]     | Array of image objects. | Valid image object. | 1 | 30 |
 | language     |  Enum     | Language of article descriptions. | One of: DE,EN,ES,FR | 1 | 1 |
-| mpn     |  String     | Manufacturer part number. The number which uniquely identifies the product to its manufacturer. | Pattern: [0-9a-zA-Z] | 3 | 30 |
+| mpn     |  String     | Manufacturer part number. The number which uniquely identifies the product to its manufacturer. | Pattern: [0-9a-zA-Z] | 0 | 30 |
 | specs     |  Array[Object]     | Array of article specification objects. | Valid specification object. | 2 | 15 |
-| title     |  String     | Short Description of article. | Pattern: [0-9a-zA-Z_-] + whitespace | 0 | 100 |
+| title     |  String     | Short Description of article. | Pattern: [0-9a-zA-Z_-] + whitespace | 5 | 100 |
 | categories     |  Array[Integer]     | Array of categories represented as integer. | Valid integer array. Not empty. | 1 | 3 |
 
 ## Image properties
