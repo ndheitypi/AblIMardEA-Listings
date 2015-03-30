@@ -11,7 +11,7 @@ The listing API is a collection of services related to listings, auctions (with 
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify a listing. Choosen automatically. | None (not editable) |
 | article     |  Object     | Article object. | See article properties | 1 | 1 |
-| auction     |  Object     | Auction object. | See auction properties | 1 | 1 |
+| auction     |  Array[Object]     | Auction objects. | See auction properties. Other seller can join a listing when its buy now only. | 1 | * |
 | hitcount     |  Integer     | Number of page hits since start of listing. | Valid Integer. | 1 | 1 |
 | isbuynowonly     |  Boolean     | True if listing is buy now only. | Not null. Auction.buynowprice > 0  | 1 | 1 |
 
@@ -28,7 +28,7 @@ The listing API is a collection of services related to listings, auctions (with 
 | hasreservemet     |  Boolean     | True if reserve price was met. Always false if Listing.isbuynowonly equals true. | Not null. | 1 | 1 |
 | hasreserveprice     |  Boolean     | True if reserve price is greater than zero. Always false if Listing.isbuynowonly equals true. | Not null. | 1 | 1 |
 | ispickupallowed     |  Boolean     | True if article can be picked up. | Not null. | 1 | 1 |
-| quantity     |  Integer     | Number of articles. If quantity is set to a value greater than one then auction is set to buy now only. | >= 1 when auction starts | 0 | * |
+| quantity     |  Integer     | Number of articles. If quantity is greater than one then auction is set to buy now only. | >= 1 on auction start | 0 | * |
 | currency     |  Enum     | Currency. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
 | reserveprice     |  Decimal   | The reserve price. | Valid money value.  | 0 | * |
 | buynowprice     |  Decimal   | The buy now price. | Valid money value. Must be greater than zero if Listing.isbuynowonly equals true. | 0 | * |
@@ -38,6 +38,9 @@ The listing API is a collection of services related to listings, auctions (with 
 | shippingoptions     |  Array[Object]   | List of *shipping options*. If empty the article is pick up only. | Valid shippingoption object. See shippingoption properties. | 1 | 5 |
 | paymentoptions     |  Array[Object]   | List of *payment options*. If empty the article can only be paid on pick up. | Valid paymentoptions object. See paymentoptions properties. | 1 | 5 |
 | location     |  Object   | *Locaction* of article. Sellers country and town are used when left empty. | Valid location object. See location properties. | 0 | 1 |
+| bonuspoints     |  Decimal   | Product of multiplying Auction.bonuspointfactor with Auction.price or Auction.buynowprice if Listing.isbuynowonly equals true.  | Valid decimal value.  | 0 | * |
+| bonuspointfactor     |  Decimal   | Factor to calculate bonuspoints. Is a fixed value depening on auction fee.  | Valid decimal value.  | >0 | * |
+| auctionfee     |  Decimal   | Auction fee in percent. Choosen by seller on auction start. | Valid decimal value.  | 0.045 | 0.2 |
 
 ## Condition properties
 
@@ -75,7 +78,8 @@ The listing API is a collection of services related to listings, auctions (with 
 | currency     |  Enum     | Currency of all money values in this shipping option. | Must be a 3 letter iso code according to [ISO-4217](http://de.wikipedia.org/wiki/ISO_4217) | 1 | 1 |
 | optionname     |  String     | Name of shipping option e.g. UPS Express | Pattern: [0-9a-zA-Z] + whitespace | 3 | 30 |
 | insurancevalue     |  Decimal   | Max. insured value. | Valid decimal value.  | 0 | * |
-| durationavg     |  Small Integer   | Average time till delivery in days. | Valid integer value.  | 0 | 255 |
+| durationmin     |  Small Integer   | Minimum time till delivery in days. | Valid integer value.  | 0 | 255 |
+| durationmax     |  Small Integer   | Maximum time till delivery in days. | Valid integer value.  | 0 | 255 |
 | destinations     |  Array[String]   | Array of 2 letter destination countries. | Valid [ISO-3166-1](https://github.com/ndheitypi/AblIMardEA-Users/wiki/Country-Codes) country codes.  | 1 | 20 |
 
 ## PaymentOption properties
