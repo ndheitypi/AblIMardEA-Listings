@@ -120,6 +120,12 @@ The listing API is a collection of services related to listings, auctions (with 
 | Name      |      Type         |  Description  | Constraints | Min.-Length | Max.-Length |
 |----------|:-------------:|:------:|------|:------:|------|------|
 | id     |  String     | Public id to identify a seller. Choosen automatically. | None (not editable) |
+| country     |  Enum     | Country | Must be a 2 letter code according to [ISO-3166-1](https://github.com/ndheitypi/AblIMardEA-Users/wiki/Country-Codes) | 1 | 1 |
+| feedbackneutral     |  Integer     | Number of neutral feedbacks. |  Valid Integer.  | >=0 | * |
+| feedbacknegative     |  Integer     | Number of negative feedbacks. |  Valid Integer.  | >=0 | * |
+| feedbackpositive     |  Integer     | Number of positive feedbacks. |  Valid Integer.  | >=0 | * |
+| feedbackempty     |  Integer     | Number of auctions without feedback. |  Valid Integer.  | >=0 | * |
+
 
 ## Article properties
 
